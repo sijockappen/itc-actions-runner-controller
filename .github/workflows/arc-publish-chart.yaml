@@ -40,12 +40,12 @@ jobs:
       publish-chart: ${{ steps.publish-chart-step.outputs.publish }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Set up Helm
-        uses: azure/setup-helm@b9e51907a09c216f16ebe8536097933489208112
+        uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4
         with:
           version: ${{ env.HELM_VERSION }}
 
@@ -58,12 +58,12 @@ jobs:
         run: helm template  --values charts/.ci/values-kube-score.yaml charts/* | ./kube-score score - --ignore-test pod-networkpolicy --ignore-test deployment-has-poddisruptionbudget --ignore-test deployment-has-host-podantiaffinity --ignore-test container-security-context --ignore-test pod-probes --ignore-test container-image-tag --enable-optional-test container-security-context-privileged --enable-optional-test container-security-context-readonlyrootfilesystem
 
       # python is a requirement for the chart-testing action below (supports yamllint among other tests)
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
 
       - name: Set up chart-testing
-        uses: helm/chart-testing-action@0d28d3144d3a25ea2cc349d6e59901c4ff469b3b
+        uses: helm/chart-testing-action@6ec842c01de15ebb84c8627d2744a0c2f2755c9f
 
       - name: Run chart-testing (list-changed)
         id: list-changed
@@ -79,7 +79,7 @@ jobs:
 
       - name: Create kind cluster
         if: steps.list-changed.outputs.changed == 'true'
-        uses: helm/kind-action@a1b0e391336a6ee6713a0583f8c6240d70863de3
+        uses: helm/kind-action@92086f6be054225fa813e0a4b13787fc9088faab
 
       # We need cert-manager already installed in the cluster because we assume the CRDs exist
       - name: Install cert-manager
@@ -134,7 +134,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -184,7 +184,7 @@ jobs:
       # this workaround is intended to move the index.yaml to the target repo
       # where the github pages are hosted
       - name: Checkout target repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ env.CHART_TARGET_ORG }}/${{ env.CHART_TARGET_REPO }}
           path: ${{ env.CHART_TARGET_REPO }}
